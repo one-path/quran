@@ -6,6 +6,15 @@
     <title>Тренажер аятов</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @font-face {
+    font-family: 'UthmanicHafs';
+    src: url('path-to-font/UthmanicHafs1_Ver2.woff2') format('woff2');
+}
+.arabic-text {
+    font-family: 'UthmanicHafs', serif;
+    direction: rtl;
+    font-size: 24px;
+}
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
         .arabic { font-family: 'Amiri', serif; }
         .word-chip { transition: all 0.2s ease; }
