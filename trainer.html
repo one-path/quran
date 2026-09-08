@@ -149,7 +149,7 @@
 
         async function initApp() {
             try {
-                const response = await fetch(`data/surah_${surahNumber}.json`);
+                const response = await fetch(`data/surah${surahNumber}.json`);
                 if (!response.ok) throw new Error("Сура не найдена");
                 
                 currentSurah = await response.json();
