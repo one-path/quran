@@ -426,39 +426,50 @@
         }
 
         function initBlankQuiz() {
-            const ayah = verses[currentIndex];
-            document.getElementById('ayah-selector').value = currentIndex;
-            document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / verses.length) * 100}%`;
-            document.getElementById('result-message').innerText = '';
-            document.getElementById('blank-translation').innerText = ayah.translation;
+    const ayah = verses[currentIndex];
+    document.getElementById('ayah-selector').value = currentIndex;
+    document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / verses.length) * 100}%`;
+    document.getElementById('result-message').innerText = '';
+    document.getElementById('blank-translation').innerText = ayah.translation;
 
-            if (ayah.words.length < 2) return;
+    if (ayah.words.length < 2) return;
 
-            currentBlankIndex = Math.floor(Math.random() * ayah.words.length);
-            currentBlankCorrectWord = ayah.words[currentBlankIndex].ar;
+    currentBlankIndex = Math.floor(Math.random() * ayah.words.length);
+    currentBlankCorrectWord = ayah.words[currentBlankIndex].ar;
 
-            const textContainer = document.getElementById('blank-ayah-text');
-            textContainer.innerHTML = ayah.words.map((w, idx) => (idx === currentBlankIndex) ? '<span class="text-emerald-400 font-bold underline px-1">( ____ )</span>' : w.ar).join(' ');
-
-            const allWordsPool = verses.flatMap(v => v.words.map(w => w.ar));
-            let options = [currentBlankCorrectWord];
-            while (options.length < 4 && allWordsPool.length >= 4) {
-                const randWord = allWordsPool[Math.floor(Math.random() * allWordsPool.length)];
-                if (!options.includes(randWord)) options.push(randWord);
-            }
-            options.sort(() => Math.random() - 0.5);
-
-            const optionsContainer = document.getElementById('blank-options-container');
-            optionsContainer.innerHTML = '';
-
-            options.forEach(word => {
-                const btn = document.createElement('button');
-                btn.className = 'arabic text-xl bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100 py-2.5 rounded-xl transition shadow';
-                btn.innerText = word;
-                btn.onclick = () => checkBlankAnswer(word, btn);
-                optionsContainer.appendChild(btn);
-            });
+    const textContainer = document.getElementById('blank-ayah-text');
+    // Гарантируем правильное направление RTL и правильный порядок слов справа налево
+    textContainer.style.direction = 'rtl';
+    textContainer.style.textAlign = 'center';
+    
+    // Собираем слова в обратном порядке визуального потока или через flexbox-контейнер, 
+    // либо явно проставляем dir="rtl" для каждого элемента:
+    textContainer.innerHTML = ayah.words.map((w, idx) => {
+        if (idx === currentBlankIndex) {
+            return '<span dir="rtl" class="text-emerald-400 font-bold underline px-1">( ____ )</span>';
         }
+        return `<span dir="rtl">${w.ar}</span>`;
+    }).join(' ');
+
+    const allWordsPool = verses.flatMap(v => v.words.map(w => w.ar));
+    let options = [currentBlankCorrectWord];
+    while (options.length < 4 && allWordsPool.length >= 4) {
+        const randWord = allWordsPool[Math.floor(Math.random() * allWordsPool.length)];
+        if (!options.includes(randWord)) options.push(randWord);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    const optionsContainer = document.getElementById('blank-options-container');
+    optionsContainer.innerHTML = '';
+
+    options.forEach(word => {
+        const btn = document.createElement('button');
+        btn.className = 'arabic text-xl bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100 py-2.5 rounded-xl transition shadow';
+        btn.innerText = word;
+        btn.onclick = () => checkBlankAnswer(word, btn);
+        optionsContainer.appendChild(btn);
+    });
+}
 
         function checkBlankAnswer(chosenWord, btnElement) {
             const msgEl = document.getElementById('result-message');
