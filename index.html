@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Коран — Все суры в правильном порядке</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arabic: ['Amiri', 'serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+        .dir-rtl { direction: rtl; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
+
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">📖</span>
+                <div>
+                    احفظ القرآن الكريم
+                    <h1 class="text-xl md:text-2xl font-bold text-emerald-400 tracking-tight">Священный Коран — Все 114 сур</h1>
+                    <p class="text-xs text-slate-400">Полный список в каноническом порядке с интерактивными тренажерами</p>
+                </div>
+            </div>
+
+            <div class="w-full md:w-80 relative">
+                <input type="text" id="search-input" oninput="filterSurahs()" placeholder="Поиск суры по названию или номеру..." class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-xl px-4 py-2.5 pl-10 focus:outline-none focus:border-emerald-500 transition shadow-inner">
+                <span class="absolute left-3.5 top-3 text-slate-400 text-sm">🔍</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- Фильтры по мекканским / мединским сурам -->
+        <section class="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+            <div class="flex flex-wrap gap-2">
+                <button onclick="setFilter('all')" id="filter-all-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white transition shadow">Все суры (114)</button>
+                <button onclick="setFilter('meccan')" id="filter-meccan-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Мекканские</button>
+                <button onclick="setFilter('medinan')" id="filter-medinan-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Мединские</button>
+            </div>
+            <div id="surahs-counter" class="text-xs text-slate-400">Показано: 114 сур</div>
+        </section>
+
+        <!-- Сетка всех 114 сур -->
+        <section id="surahs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Динамически заполняется через JS -->
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-12 text-center text-xs text-slate-500">
+        <p>Священный Коран • Канонический порядок сур от Аль-Фатиха до Ан-Нас</p>
+    </footer>
+
+    <script>
+        const allSurahs = [
+            { number: 1, name: "Аль-Фатиха", arabic: "الفاتحة", meaning: "Открывающая", ayahs: 7, type: "Мекканская" },
+            { number: 2, name: "Аль-Бакара", arabic: "البقرة", meaning: "Корова", ayahs: 286, type: "Мединская" },
+            { number: 3, name: "Аль 'Имран", arabic: "آل عمران", meaning: "Семейство Имрана", ayahs: 200, type: "Мединская" },
+            { number: 4, name: "Ан-Ниса", arabic: "النساء", meaning: "Женщины", ayahs: 176, type: "Мединская" },
+            { number: 5, name: "Аль-Маида", arabic: "المائدة", meaning: "Трапеза", ayahs: 120, type: "Мединская" },
+            { number: 6, name: "Аль-Ан'ам", arabic: "الأنعام", meaning: "Скот", ayahs: 165, type: "Мекканская" },
+            { number: 7, name: "Аль-А'раф", arabic: "الأعراف", meaning: "Ограды", ayahs: 206, type: "Мекканская" },
+            { number: 8, name: "Аль-Анфаль", arabic: "الأنفال", meaning: "Добыча", ayahs: 75, type: "Мединская" },
+            { number: 9, name: "Ат-Тавба", arabic: "التوبة", meaning: "Покаяние", ayahs: 129, type: "Мединская" },
+            { number: 10, name: "Юнус", arabic: "يونس", meaning: "Иона", ayahs: 109, type: "Мекканская" },
+            { number: 11, name: "Худ", arabic: "هود", meaning: "Худ", ayahs: 123, type: "Мекканская" },
+            { number: 12, name: "Юсуф", arabic: "يوسف", meaning: "Иосиф", ayahs: 111, type: "Мекканская" },
+            { number: 13, name: "Ар-Ра'д", arabic: "الرعد", meaning: "Гром", ayahs: 43, type: "Мединская" },
+            { number: 14, name: "Ибрахим", arabic: "إبراهيم", meaning: "Авраам", ayahs: 52, type: "Мекканская" },
+            { number: 15, name: "Аль-Хиджр", arabic: "الحجر", meaning: "Хиджр", ayahs: 99, type: "Мекканская" },
+            { number: 16, name: "Ан-Нахль", arabic: "النحل", meaning: "Пчелы", ayahs: 128, type: "Мекканская" },
+            { number: 17, name: "Аль-Исра", arabic: "الإسراء", meaning: "Ночное путешествие", ayahs: 111, type: "Мекканская" },
+            { number: 18, name: "Аль-Кахф", arabic: "الكهف", meaning: "Пещера", ayahs: 110, type: "Мекканская" },
+            { number: 19, name: "Марьям", arabic: "مريم", meaning: "Мария", ayahs: 98, type: "Мекканская" },
+            { number: 20, name: "Та Ха", arabic: "طه", meaning: "Та Ха", ayahs: 135, type: "Мекканская" },
+            { number: 21, name: "Аль-Анбия", arabic: "الأنبياء", meaning: "Пророки", ayahs: 112, type: "Мекканская" },
+            { number: 22, name: "Аль-Хаджж", arabic: "الحج", meaning: "Паломничество", ayahs: 78, type: "Мединская" },
+            { number: 23, name: "Аль-Муминун", arabic: "المؤمنون", meaning: "Верующие", ayahs: 118, type: "Мекканская" },
+            { number: 24, name: "Ан-Нур", arabic: "النور", meaning: "Свет", ayahs: 64, type: "Мединская" },
+            { number: 25, name: "Аль-Фуркан", arabic: "الفرقان", meaning: "Различение", ayahs: 77, type: "Мекканская" },
+            { number: 26, name: "Аш-Шу'ара", arabic: "الشعراء", meaning: "Поэты", ayahs: 227, type: "Мекканская" },
+            { number: 27, name: "Ан-Намль", arabic: "النمل", meaning: "Муравьи", ayahs: 93, type: "Мекканская" },
+            { number: 28, name: "Аль-Касас", arabic: "القصص", meaning: "Рассказ", ayahs: 88, type: "Мекканская" },
+            { number: 29, name: "Аль-'Анкабут", arabic: "العنكبوت", meaning: "Паук", ayahs: 69, type: "Мекканская" },
+            { number: 30, name: "Ар-Рум", arabic: "الروم", meaning: "Рифмяне", ayahs: 60, type: "Мекканская" },
+            { number: 31, name: "Лукман", arabic: "لقمان", meaning: "Лукман", ayahs: 34, type: "Мекканская" },
+            { number: 32, name: "Ас-Саджда", arabic: "السجدة", meaning: "Земной поклон", ayahs: 30, type: "Мекканская" },
+            { number: 33, name: "Аль-Ахзаб", arabic: "الأحزاب", meaning: "Союзники", ayahs: 73, type: "Мединская" },
+            { number: 34, name: "Саба", arabic: "سبأ", meaning: "Саба", ayahs: 54, type: "Мекканская" },
+            { number: 35, name: "Фатыр", arabic: "فاطر", meaning: "Творец", ayahs: 45, type: "Мекканская" },
+            { number: 36, name: "Йа Син", arabic: "يس", meaning: "Йа Син", ayahs: 83, type: "Мекканская" },
+            { number: 37, name: "Ас-Саффат", arabic: "الصافات", meaning: "Выстроившиеся в ряды", ayahs: 182, type: "Мекканская" },
+            { number: 38, name: "Сад", arabic: "ص", meaning: "Буква Сад", ayahs: 88, type: "Мекканская" },
+            { number: 39, name: "Аз-Зумар", arabic: "الزمر", meaning: "Толпы", ayahs: 75, type: "Мекканская" },
+            { number: 40, name: "Гафир", arabic: "غافر", meaning: "Прощающий", ayahs: 85, type: "Мекканская" },
+            { number: 41, name: "Фуссылат", arabic: "فصلت", meaning: "Разъяснены", ayahs: 54, type: "Мекканская" },
+            { number: 42, name: "Аш-Шура", arabic: "الشورى", meaning: "Совет", ayahs: 53, type: "Мекканская" },
+            { number: 43, name: "Аз-Зухруф", arabic: "الزخرف", meaning: "Украшения", ayahs: 89, type: "Мекканская" },
+            { number: 44, name: "Ад-Духан", arabic: "الدخان", meaning: "Дым", ayahs: 59, type: "Мекканская" },
+            { number: 45, name: "Аль-Джасия", arabic: "الجاثية", meaning: "Коленопреклоненные", ayahs: 37, type: "Мекканская" },
+            { number: 46, name: "Аль-Ахкаф", arabic: "الأحقاف", meaning: "Барханы", ayahs: 35, type: "Мекканская" },
+            { number: 47, name: "Мухаммад", arabic: "محمد", meaning: "Мухаммад", ayahs: 38, type: "Мединская" },
+            { number: 48, name: "Аль-Фатх", arabic: "الفتح", meaning: "Победа", ayahs: 29, type: "Мединская" },
+            { number: 49, name: "Аль-Худжурат", arabic: "الحجرات", meaning: "Комнаты", ayahs: 18, type: "Мединская" },
+            { number: 50, name: "Каф", arabic: "ق", meaning: "Буква Каф", ayahs: 45, type: "Мекканская" },
+            { number: 51, name: "Ад-Зарият", arabic: "الذاريات", meaning: "Рассеивающие прах", ayahs: 60, type: "Мекканская" },
+            { number: 52, name: "Ат-Тур", arabic: "الطور", meaning: "Гора", ayahs: 49, type: "Мекканская" },
+            { number: 53, name: "Ан-Наджм", arabic: "النجم", meaning: "Звезда", ayahs: 62, type: "Мекканская" },
+            { number: 54, name: "Аль-Камар", arabic: "القمر", meaning: "Месяц", ayahs: 55, type: "Мекканская" },
+            { number: 55, name: "Ар-Рахман", arabic: "الرحمن", meaning: "Милостивый", ayahs: 78, type: "Мединская" },
+            { number: 56, name: "Аль-Ваки'а", arabic: "الواقعة", meaning: "Событие", ayahs: 96, type: "Мекканская" },
+            { number: 57, name: "Аль-Хадид", arabic: "الحديد", meaning: "Железо", ayahs: 29, type: "Мединская" },
+            { number: 58, name: "Аль-Муджадиля", arabic: "المجادلة", meaning: "Пререкающаяся", ayahs: 22, type: "Мединская" },
+            { number: 59, name: "Аль-Хашр", arabic: "الحشر", meaning: "Сбор", ayahs: 24, type: "Мединская" },
+            { number: 60, name: "Аль-Мумтахана", arabic: "الممتحنة", meaning: "Испытуемая", ayahs: 13, type: "Мединская" },
+            { number: 61, name: "Ас-Сафф", arabic: "الصف", meaning: "Ряд", ayahs: 14, type: "Мединская" },
+            { number: 62, name: "Аль-Джуму'а", arabic: "الجمعة", meaning: "Пятница", ayahs: 11, type: "Мединская" },
+            { number: 63, name: "Аль-Мунафикун", arabic: "المنافقون", meaning: "Лицемеры", ayahs: 11, type: "Мединская" },
+            { number: 64, name: "Ат-Тагабун", arabic: "التغابن", meaning: "Взаимное обманывание", ayahs: 18, type: "Мединская" },
+            { number: 65, name: "Ат-Таляк", arabic: "الطلاق", meaning: "Развод", ayahs: 12, type: "Мединская" },
+            { number: 66, name: "Ат-Тахрим", arabic: "التحريم", meaning: "Запрещение", ayahs: 12, type: "Мединская" },
+            { number: 67, name: "Аль-Мульк", arabic: "الملك", meaning: "Власть", ayahs: 30, type: "Мекканская" },
+            { number: 68, name: "Аль-Калям", arabic: "القلم", meaning: "Письменная трость", ayahs: 52, type: "Мекканская" },
+            { number: 69, name: "Аль-Хакка", arabic: "الحاقة", meaning: "Неизбежное", ayahs: 52, type: "Мекканская" },
+            { number: 70, name: "Аль-Ма'аридж", arabic: "المعارج", meaning: "Ступени", ayahs: 44, type: "Мекканская" },
+            { number: 71, name: "Нух", arabic: "نوح", meaning: "Нух", ayahs: 28, type: "Мекканская" },
+            { number: 72, name: "Аль-Джинн", arabic: "الجن", meaning: "Джинны", ayahs: 28, type: "Мекканская" },
+            { number: 73, name: "Аль-Муззаммиль", arabic: "المزمل", meaning: "Завернувшийся", ayahs: 20, type: "Мекканская" },
+            { number: 74, name: "Аль-Муддассир", arabic: "المدثر", meaning: "Закутавшийся", ayahs: 56, type: "Мекканская" },
+            { number: 75, name: "Аль-Кияма", arabic: "القيامة", meaning: "Воскресение", ayahs: 40, type: "Мекканская" },
+            { number: 76, name: "Аль-Инсан", arabic: "الإنسان", meaning: "Человек", ayahs: 31, type: "Мединская" },
+            { number: 77, name: "Аль-Мурсалят", arabic: "المرسلات", meaning: "Посылаемые", ayahs: 50, type: "Мекканская" },
+            { number: 78, name: "Ан-Наба", arabic: "النبأ", meaning: "Весть", ayahs: 40, type: "Мекканская" },
+            { number: 79, name: "Ан-Нази'ат", arabic: "النازعات", meaning: "Исторгающие", ayahs: 46, type: "Мекканская" },
+            { number: 80, name: "Абаса", arabic: "عبس", meaning: "Нахмурился", ayahs: 42, type: "Мекканская" },
+            { number: 81, name: "Ат-Таквир", arabic: "التكوير", meaning: "Скручивание", ayahs: 29, type: "Мекканская" },
+            { number: 82, name: "Аль-Инфитар", arabic: "الانفطار", meaning: "Раскол", ayahs: 19, type: "Мекканская" },
+            { number: 83, name: "Аль-Мутаффифин", arabic: "المطففين", meaning: "Обвешивающие", ayahs: 36, type: "Мекканская" },
+            { number: 84, name: "Аль-Иншикак", arabic: "الانشقاق", meaning: "Раскол", ayahs: 25, type: "Мекканская" },
+            { number: 85, name: "Аль-Бурудж", arabic: "البروج", meaning: "Созвездия", ayahs: 22, type: "Мекканская" },
+            { number: 86, name: "Ат-Тарик", arabic: "الطارق", meaning: "Ночной странник", ayahs: 17, type: "Мекканская" },
+            { number: 87, name: "Аль-А'ля", arabic: "الأعلى", meaning: "Всевышний", ayahs: 19, type: "Мекканская" },
+            { number: 88, name: "Аль-Гашия", arabic: "الغاشية", meaning: "Покрывающая", ayahs: 26, type: "Мекканская" },
+            { number: 89, name: "Аль-Фаджр", arabic: "الفجر", meaning: "Заря", ayahs: 30, type: "Мекканская" },
+            { number: 90, name: "Аль-Баляд", arabic: "البلد", meaning: "Город", ayahs: 20, type: "Мекканская" },
+            { number: 91, name: "Аш-Шамс", arabic: "الشمس", meaning: "Солнце", ayahs: 15, type: "Мекканская" },
+            { number: 92, name: "Аль-Лейль", arabic: "الليل", meaning: "Ночь", ayahs: 21, type: "Мекканская" },
+            { number: 93, name: "Ад-Духа", arabic: "الضحى", meaning: "Утро", ayahs: 11, type: "Мекканская" },
+            { number: 94, name: "Аш-Шарх", arabic: "الشرح", meaning: "Раскрытие", ayahs: 8, type: "Мекканская" },
+            { number: 95, name: "Ат-Тин", arabic: "التين", meaning: "Смоковница", ayahs: 8, type: "Мекканская" },
+            { number: 96, name: "Аль-'Аляк", arabic: "العلق", meaning: "Сгусток", ayahs: 19, type: "Мекканская" },
+            { number: 97, name: "Аль-Кадр", arabic: "القدر", meaning: "Предопределение", ayahs: 5, type: "Мекканская" },
+            { number: 98, name: "Аль-Байина", arabic: "البينة", meaning: "Ясное знамение", ayahs: 8, type: "Мединская" },
+            { number: 99, name: "Аз-Залзаля", arabic: "الزلزلة", meaning: "Землетрясение", ayahs: 8, type: "Мединская" },
+            { number: 100, name: "Аль-'Адият", arabic: "العاديات", meaning: "Скачущие", ayahs: 11, type: "Мекканская" },
+            { number: 101, name: "Аль-Кари'а", arabic: "القارعة", meaning: "Великое бедствие", ayahs: 11, type: "Мекканская" },
+            { number: 102, name: "Ат-Такасур", arabic: "التكاثر", meaning: "Страсть к приумножению", ayahs: 8, type: "Мекканская" },
+            { number: 103, name: "Аль-'Аср", arabic: "العصر", meaning: "Вечер / Время", ayahs: 3, type: "Мекканская" },
+            { number: 104, name: "Аль-Хумаза", arabic: "الهمزة", meaning: "Хулитель", ayahs: 9, type: "Мекканская" },
+            { number: 105, name: "Аль-Филь", arabic: "الفيل", meaning: "Слон", ayahs: 5, type: "Мекканская" },
+            { number: 106, name: "Курайш", arabic: "قريش", meaning: "Курайшиты", ayahs: 4, type: "Мекканская" },
+            { number: 107, name: "Аль-Ма'ун", arabic: "الماعون", meaning: "Мелочь", ayahs: 7, type: "Мекканская" },
+            { number: 108, name: "Аль-Каусар", arabic: "الكوثر", meaning: "Изобилие", ayahs: 3, type: "Мекканская" },
+            { number: 109, name: "Аль-Кафирун", arabic: "الكافرون", meaning: "Неверующие", ayahs: 6, type: "Мекканская" },
+            { number: 110, name: "Ан-Наср", arabic: "النصر", meaning: "Помощь", ayahs: 3, type: "Мединская" },
+            { number: 111, name: "Аль-Масад", arabic: "المسد", meaning: "Пальмовые волокна", ayahs: 5, type: "Мекканская" },
+            { number: 112, name: "Аль-Ихлас", arabic: "الإخلاص", meaning: "Очищение веры", ayahs: 4, type: "Мекканская" },
+            { number: 113, name: "Аль-Фалак", arabic: "الفلق", meaning: "Рассвет", ayahs: 5, type: "Мекканская" },
+            { number: 114, name: "Ан-Нас", arabic: "الناس", meaning: "Люди", ayahs: 6, type: "Мекканская" }
+        ];
+
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        function renderSurahs() {
+            const grid = document.getElementById('surahs-grid');
+            grid.innerHTML = '';
+
+            const filtered = allSurahs.filter(s => {
+                const matchesFilter = currentFilter === 'all' || 
+                    (currentFilter === 'meccan' && s.type === 'Мекканская') || 
+                    (currentFilter === 'medinan' && s.type === 'Мединская');
+                
+                const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    s.meaning.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    s.number.toString() === searchQuery;
+
+                return matchesFilter && matchesSearch;
+            });
+
+            document.getElementById('surahs-counter').innerText = `Показано сур: ${filtered.length} из 114`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-500 bg-slate-900/40 rounded-2xl border border-slate-800">
+                        <span class="text-3xl mb-2 block">🔍</span>
+                        <p>По вашему запросу ничего не найдено.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(surah => {
+                const card = document.createElement('a');
+                
+                // Ссылка на тренажер для суры №76 (Аль-Инсан), для остальных — заглушка
+                if (surah.number === 76) {
+                    card.href = "surah_al_insan_trainer.html";
+                } else {
+                    card.href = "#";
+                    card.onclick = (e) => {
+                        e.preventDefault();
+                        alert(`Тренажер для суры «${surah.name}» находится в разработке. Попробуйте суру №76 «Аль-Инсан»!`);
+                    };
+                }
+
+                card.className = "bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-5 rounded-2xl transition flex items-center justify-between shadow group cursor-pointer block no-underline";
+                
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm group-hover:border-emerald-500/50 transition">
+                            ${surah.number}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-slate-100 group-hover:text-emerald-300 transition">${surah.name}</h3>
+                                <span class="text-xs text-slate-400">(${surah.meaning})</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-xs px-2 py-0.5 rounded-full ${surah.type === 'Мекканская' ? 'bg-amber-950/60 text-amber-300 border border-amber-800/50' : 'bg-cyan-950/60 text-cyan-300 border border-cyan-800/50'}">${surah.type}</span>
+                                <span class="text-xs text-slate-500">${surah.ayahs} аятов</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="arabic text-xl md:text-2xl text-emerald-400/80 group-hover:text-emerald-300 transition dir-rtl">
+                            ${surah.arabic}
+                        </div>
+                        <span class="text-slate-600 group-hover:text-emerald-400 text-lg transition">→</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            ['all', 'meccan', 'medinan'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}-btn`);
+                if (f === filter) {
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white transition shadow';
+                } else {
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+                }
+            });
+            renderSurahs();
+        }
+
+        function filterSurahs() {
+            searchQuery = document.getElementById('search-input').value;
+            renderSurahs();
+        }
+
+        renderSurahs();
+    </script>
+</body>
+</html>
