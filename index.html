@@ -226,16 +226,9 @@
             filtered.forEach(surah => {
                 const card = document.createElement('a');
                 
-                // Ссылка на тренажер для суры №76 (Аль-Инсан), для остальных — заглушка
-                if (surah.number === 76) {
-                    card.href = "surah_al_insan_trainer.html";
-                } else {
-                    card.href = "#";
-                    card.onclick = (e) => {
-                        e.preventDefault();
-                        alert(`Тренажер для суры «${surah.name}» находится в разработке. Попробуйте суру №76 «Аль-Инсан»!`);
-                    };
-                }
+               
+               // Теперь любая сура ведет на универсальный тренажер, передавая свой номер
+                card.href = `trainer.html?surah=${surah.number}`;
 
                 card.className = "bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-5 rounded-2xl transition flex items-center justify-between shadow group cursor-pointer block no-underline";
                 
