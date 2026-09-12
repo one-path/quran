@@ -10,6 +10,23 @@
     font-family: 'UthmanTaha';
     src: url('fonts/KFGQPC-Uthman-Taha-Naskh-Regular.ttf') format('truetype');
 }
+        @font-face {
+    font-family: 'UthmanTaha';
+    src: url('fonts/KFGQPC-Uthman-Taha-Naskh-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.quran-arabic-text {
+    font-family: 'UthmanTaha', serif;
+    font-weight: 400; /* Строго нормальная толщина, чтобы браузер не делал жирным */
+    -webkit-font-smoothing: antialiased; /* Включает качественное сглаживание в Chrome/Safari */
+    -moz-osx-font-smoothing: grayscale; /* Для Firefox на Mac */
+    text-rendering: optimizeLegibility; /* Оптимизирует отображение лигатур и знаков */
+    font-size: 1.8rem; /* Делаем текст чуть крупнее, чтобы точки и харакаты «дышали» */
+    line-height: 2.4; /* Увеличиваем межстрочный интервал */
+}
 
 .arabic-text {
     font-family: 'UthmanTaha', serif;
